@@ -1,0 +1,81 @@
+const { query } = require('express');
+const deal = require('../controller/dealWithJson.js');
+
+class User{
+    static home  = (req,res)=>{
+
+        const data = deal.readDataFromJson('user.json');
+
+        res.render("home",{data:data});
+
+    }
+
+    static add = (req,res)=>{
+
+ 
+        const user = {  // body for post , query for get
+            name: req.body.name,
+            email: req.body.email,
+            age: req.body.age
+        }
+ 
+        const data = deal.readDataFromJson('user.json');
+        data.push(user);
+        deal.writeDataToJson('user.json', data);
+        res.redirect('/');
+
+    }
+
+    static edit = (req,res)=>{
+        
+        res.render('add');
+    
+    }
+
+    static read_edit = (req,res)=>{
+        
+        const age = req.params.age;
+
+        const data = deal.readDataFromJson('user.json');
+        const user = data.find(user=>user.age == age);
+        res.render('edit',{user:user});
+     
+    }
+
+    static save = (req,res)=>{
+        
+             
+        const user1 = {name:req.query.name,email:req.query.email,age:req.query.age};
+ 
+        // res.send("user1.age"+user1.age);
+
+        let data = deal.readDataFromJson('user.json');
+
+
+        data = data.filter(user=>{ return user.age != user1.age; } );
+
+
+        deal.writeDataToJson('user.json', data);
+         
+        data.push(user1);
+        deal.writeDataToJson('user.json', data);
+        res.redirect('/');
+
+ 
+    }
+
+    static delete = (req,res)=>{
+
+        const age = req.params.age;
+        let data = deal.readDataFromJson('user.json');
+        data = data.filter(user=>{ return user.age != age; } );
+        deal.writeDataToJson('user.json', data);
+        res.redirect('/');
+    }
+     
+    static show = (req,res)=>{
+        res.send('show');
+    }
+} 
+
+module.exports = User;
